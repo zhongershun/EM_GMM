@@ -1,6 +1,6 @@
 import numpy as np
 
-def get_random_psd(n):
+def get_random_psd(n): ## 生成协方差矩阵
     x = np.random.normal(0, 1, size=(n, n))
     return np.dot(x, x.transpose())
 

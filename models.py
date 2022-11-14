@@ -37,9 +37,25 @@ class GMM2d():
 class EM(GMM2d):
     def __init__(self,params={}):
         super().__init__(params)
+        print(self.params)
 
     def e_step(self, x):
         # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
+        
+        ## for i in range(self.n_components):
+        Q_y1 = []  ## 记录每一个样本中y的取值为1的概率
+        Q_y0 = []  ## 纪律每一个样本中y的取值为0的概率
+
+        pdf = super().get_pdf(x)
+        ## pdf[:,0] -- p(x|y=0;theta)
+        ## pdf[:,1] -- p(x|y=1;theta)
+        print("pdf.shape ",np.array(pdf).shape(0))
+        print(pdf[:,0])  
+        ## print("frac_0 ",pdf)
+
+        # for i in range(self.n_components):
+        #     frac_0 = 
+        
 
         pass
 

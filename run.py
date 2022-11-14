@@ -15,6 +15,13 @@ if __name__ == '__main__':
     em_unsupervised = EM()
     # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
     
+    # print("x",x_unlabeled)
+
+    print(data_unlabeled)
+
+    em_unsupervised.e_step(x_unlabeled)
+
+
     unsupervised_forecasts,unsupervised_posterior = em_unsupervised.run_em(x_unlabeled)
     #visulization
     pass
