@@ -17,9 +17,10 @@ if __name__ == '__main__':
     
     # print("x",x_unlabeled)
 
-    print(data_unlabeled)
+    # print(data_unlabeled)
 
-    em_unsupervised.e_step(x_unlabeled)
+    # em_unsupervised.e_step(x_unlabeled)  ## 开发测试用
+    # em_unsupervised.m_step(x_unlabeled)  ## 开发测试用
 
 
     unsupervised_forecasts,unsupervised_posterior = em_unsupervised.run_em(x_unlabeled)
@@ -41,6 +42,8 @@ if __name__ == '__main__':
     em_semisupervised = EM(params=learned_params)
     # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
     
+    # coding in file models.py 
+
     semisupervised_forecasts,semisupervised_posterior  = em_semisupervised.run_em(x_unlabeled)
     #visulization
     pass
