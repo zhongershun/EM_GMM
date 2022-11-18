@@ -39,7 +39,7 @@ class GMM2d():
 class EM(GMM2d):
     def __init__(self,params={}):
         super().__init__(params)
-        print(self.params)
+        # print(self.params)
 
     def e_step(self, x):
         # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
@@ -115,19 +115,28 @@ class EM(GMM2d):
         # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
         echo_times = 30
         logLHs = []
-        for i in range(echo_times):
+        Q_y0 = Q_y1 = []
+        predict_proba = []
+        for _ in range(echo_times):
             Q_y0, Q_y1, logLH = self.e_step(x)
             logLHs.append(logLH)
             self.m_step(x,Q_y0,Q_y1)
-        print(self.params)
+        # print(self.params)
+        predict_proba.append(Q_y0)
+        predict_proba.append(Q_y1)
+        predict_proba = np.array(predict_proba)
+        predict_proba = predict_proba.T
+        # print("predict_proba.shape ",predict_proba.shape)
         # print(Q_y0)
         plt.figure(figsize=(8,5))
         x_axis = [i for i in range(echo_times)]
         plt.plot(x_axis, logLHs, label="line L", color='lime', alpha=0.8, linewidth=2, linestyle="--")
         plt.show()
-
+        
+        mask = Q_y1 > 0.5 ## 将多次迭代后y取1的概率大于0.5的样本预测为类别1
+        forecast = 1*mask
 
         pass
-        return 
+        return forecast, predict_proba
 
         # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****

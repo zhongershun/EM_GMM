@@ -15,6 +15,8 @@ if __name__ == '__main__':
     em_unsupervised = EM()
     # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
     
+    # coding in file models.py
+    
     # print("x",x_unlabeled)
 
     # print(data_unlabeled)
@@ -56,7 +58,10 @@ if __name__ == '__main__':
     em_api = EM(params=learned_params)
     sklearn_forecasts, posterior_sklearn = em_api.GMM_sklearn(x_unlabeled)
     print("predict:",sklearn_forecasts)
-    output_df = pd.DataFrame({'semisupervised_forecasts': semisupervised_forecasts,
+    output_df = pd.DataFrame({
+                            #   'unsupervised_forecasts': unsupervised_forecasts,
+                            #   'unsupervised_posterior': unsupervised_forecasts[:,1],
+                              'semisupervised_forecasts': semisupervised_forecasts,
                               'semisupervised_posterior': semisupervised_posterior[:, 1],
                               'sklearn_forecasts': sklearn_forecasts,
                               'posterior_sklearn': posterior_sklearn})
