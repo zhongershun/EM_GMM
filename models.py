@@ -4,6 +4,7 @@ from sklearn.mixture import GaussianMixture
 from utils import get_random_psd
 import configs
 from matplotlib import pyplot as plt
+from matplotlib.patches import Ellipse
 class GMM2d():
     def __init__(self, params={}):
         self.n_components = 2
@@ -38,6 +39,7 @@ class GMM2d():
 
 class EM(GMM2d):
     def __init__(self,params={}):
+        self.logLHs = []
         super().__init__(params)
         # print(self.params)
 
@@ -63,7 +65,7 @@ class EM(GMM2d):
 
         pass
 
-        return Q_y0, Q_y1, logLH
+        return Q_y0, Q_y1, logLH ## y取0的概率，y取1的概率，对数似然
 
         # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
         
@@ -111,15 +113,37 @@ class EM(GMM2d):
         self.params = {'phi': phi, 'mu0': mu0, 'mu1': mu1, 'sigma0': sigma0, 'sigma1': sigma1}
         return self.params
 
+    def visualization(self,X):
+        print("visualization")
+        plt.figure(figsize=(8,5))
+        x_axis = [i for i in range(len(self.logLHs))]
+        plt.plot(x_axis, self.logLHs, label="line L", color='lime', alpha=0.8, linewidth=2, linestyle="--")
+        plt.show()
+        
+        # def plot_clusters(X, Mu, Var, Mu_true=None, Var_true=None):
+        colors = ['b', 'r', 'g']
+        n_clusters = 2
+        
+        plt.figure(figsize=(8, 5))
+        plt.scatter(X[:, 0], X[:, 1], s=5,c = colors[2])
+        ax = plt.gca()
+        for i in range(n_clusters):
+            Var = self.params['sigma'+str(i)]
+            plot_args = {'fc': 'None', 'lw': 2, 'edgecolor': colors[i], 'ls': ':'}
+            ellipse = Ellipse(self.params['mu'+str(i)], 3 * Var[0][0], 3 * Var[1][1], **plot_args)
+            ax.add_patch(ellipse)   
+        plt.show()
+        
+        return
+
     def run_em(self,x):
         # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
         echo_times = 30
-        logLHs = []
         Q_y0 = Q_y1 = []
         predict_proba = []
         for _ in range(echo_times):
             Q_y0, Q_y1, logLH = self.e_step(x)
-            logLHs.append(logLH)
+            self.logLHs.append(logLH)
             self.m_step(x,Q_y0,Q_y1)
         # print(self.params)
         predict_proba.append(Q_y0)
@@ -128,10 +152,10 @@ class EM(GMM2d):
         predict_proba = predict_proba.T
         # print("predict_proba.shape ",predict_proba.shape)
         # print(Q_y0)
-        plt.figure(figsize=(8,5))
-        x_axis = [i for i in range(echo_times)]
-        plt.plot(x_axis, logLHs, label="line L", color='lime', alpha=0.8, linewidth=2, linestyle="--")
-        plt.show()
+        # plt.figure(figsize=(8,5))
+        # x_axis = [i for i in range(echo_times)]
+        # plt.plot(x_axis, logLHs, label="line L", color='lime', alpha=0.8, linewidth=2, linestyle="--")
+        # plt.show()
         
         mask = Q_y1 > 0.5 ## 将多次迭代后y取1的概率大于0.5的样本预测为类别1
         forecast = 1*mask
@@ -140,3 +164,4 @@ class EM(GMM2d):
         return forecast, predict_proba
 
         # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
+       

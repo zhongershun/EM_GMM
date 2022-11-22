@@ -48,6 +48,8 @@ if __name__ == '__main__':
 
     semisupervised_forecasts,semisupervised_posterior  = em_semisupervised.run_em(x_unlabeled)
     #visulization
+
+    em_semisupervised.visualization(x_unlabeled)
     pass
 
     # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
