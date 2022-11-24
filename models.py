@@ -11,7 +11,7 @@ class GMM2d():
         self.params = params if params else self.initialize_random_params()
     
     def initialize_random_params(self):
-        np.random.seed(0)  ## 定义一个固定的随机种子方便后续实验
+        np.random.seed(1)  ## 定义一个固定的随机种子方便后续实验
         params = {'phi': np.random.uniform(0, 1),#phi corresponds to the probability of the second gaussian
               'mu0': np.random.normal(0, 1, size=(self.n_components,)),
               'mu1': np.random.normal(0, 1, size=(self.n_components,)),
@@ -113,26 +113,57 @@ class EM(GMM2d):
         self.params = {'phi': phi, 'mu0': mu0, 'mu1': mu1, 'sigma0': sigma0, 'sigma1': sigma1}
         return self.params
 
-    def visualization(self,X):
+    def visualization(self,X,name,Y):
         print("visualization")
-        plt.figure(figsize=(8,5))
+        # ax1.figure(figsize=(8,5))
         x_axis = [i for i in range(len(self.logLHs))]
         plt.plot(x_axis, self.logLHs, label="line L", color='lime', alpha=0.8, linewidth=2, linestyle="--")
+        plt.title(name+"likehood")
+        # plt.savefig('./outputs/'+name+'_likehoods.png')
         plt.show()
+        
         
         # def plot_clusters(X, Mu, Var, Mu_true=None, Var_true=None):
         colors = ['b', 'r', 'g']
         n_clusters = 2
         
-        plt.figure(figsize=(8, 5))
-        plt.scatter(X[:, 0], X[:, 1], s=5,c = colors[2])
+        # plt.figure(figsize=(8, 5))
+        
+        # if Y[0] != [0,0]:
+        Y = Y.reshape(X.shape[0],1)
+        X_1 = X*Y
+        X_2 = X*(1-Y)
+        X_1_que = []
+        X_2_que = []
+        for i in range(X.shape[0]):
+            if X_1[i,0] == 0 and X_1[i,1] == 0:
+                continue
+            else:
+                X_1_que.append([X_1[i,0],X_1[i,1]])
+        for i in range(X.shape[0]):
+            if X_2[i,0] == 0 and X_2[i,1] == 0:
+                continue
+            else:
+                X_2_que.append([X_2[i,0],X_2[i,1]])
+        X_1_que = np.array(X_1_que)
+        X_2_que = np.array(X_2_que)
+        print(X_1_que.shape)
+        print(X_2_que.shape)
+        plt.scatter(X_1_que[:, 0], X_1_que[:, 1], s=5,c = 'yellow')
+        plt.scatter(X_2_que[:, 0], X_2_que[:, 1], s=5,c = 'purple')
+        # else:
+        #     plt.scatter(X[:,0], X[:,1], s=5, c='yellow')
         ax = plt.gca()
         for i in range(n_clusters):
-            Var = self.params['sigma'+str(i)]
+            lambda_, v = np.linalg.eig(self.params['sigma'+str(i)])
+            # Var = self.params['sigma'+str(i)]
             plot_args = {'fc': 'None', 'lw': 2, 'edgecolor': colors[i], 'ls': ':'}
-            ellipse = Ellipse(self.params['mu'+str(i)], 3 * Var[0][0], 3 * Var[1][1], **plot_args)
-            ax.add_patch(ellipse)   
+            ellipse = Ellipse(self.params['mu'+str(i)], width=lambda_[0]*8, height=lambda_[1]*4,angle=np.rad2deg(np.arccos(v[0, 0])), **plot_args)
+            ax.add_patch(ellipse)
+        plt.title(name)
+        # plt.savefig('./outputs/'+name+'_contour.png')
         plt.show()
+        
         
         return
 
@@ -145,6 +176,7 @@ class EM(GMM2d):
             Q_y0, Q_y1, logLH = self.e_step(x)
             self.logLHs.append(logLH)
             self.m_step(x,Q_y0,Q_y1)
+            # self.visualization(x,'runing',[[0,0]])
         # print(self.params)
         predict_proba.append(Q_y0)
         predict_proba.append(Q_y1)
@@ -160,6 +192,11 @@ class EM(GMM2d):
         mask = Q_y1 > 0.5 ## 将多次迭代后y取1的概率大于0.5的样本预测为类别1
         forecast = 1*mask
 
+        print("\tphi: {}\n \
+            \tmu_0: {}\n \
+            \tmu_1: {}\n \
+            \tsigma0: {}\n \
+            \tsigma1: {}\n".format(self.params['phi'],self.params['mu0'],self.params['mu1'],self.params['sigma1'],self.params['sigma1']))
         pass
         return forecast, predict_proba
 

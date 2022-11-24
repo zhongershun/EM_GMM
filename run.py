@@ -27,6 +27,8 @@ if __name__ == '__main__':
 
     unsupervised_forecasts,unsupervised_posterior = em_unsupervised.run_em(x_unlabeled)
     #visulization
+
+    em_unsupervised.visualization(x_unlabeled,"unsupervised",unsupervised_forecasts)
     pass
 
     # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
@@ -49,7 +51,7 @@ if __name__ == '__main__':
     semisupervised_forecasts,semisupervised_posterior  = em_semisupervised.run_em(x_unlabeled)
     #visulization
 
-    em_semisupervised.visualization(x_unlabeled)
+    em_semisupervised.visualization(x_unlabeled,"semisupervised",semisupervised_forecasts)
     pass
 
     # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
